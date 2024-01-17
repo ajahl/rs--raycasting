@@ -53,7 +53,7 @@ impl Ray {
             let segment_line = segment.line();
             match segment_line {
                 Ok(line) => {
-                    if line.slope != line.slope {
+                    if start_line.slope != line.slope {
                         let point = Line::intercept(&start_line, &line);
 
                         if segment.in_bounds(point) && ray_segment.in_bounds(point) {

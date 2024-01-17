@@ -15,9 +15,9 @@ impl Segment {
 
     pub fn slope(&self) -> f32 {
         if (self.end.x - self.start.x).abs() < f32::EPSILON {
-            return f32::INFINITY;
+            f32::INFINITY
         } else {
-            return (self.end.y - self.start.y) / (self.end.x - self.start.x);
+            (self.end.y - self.start.y) / (self.end.x - self.start.x)
         }
     }
 

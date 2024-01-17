@@ -25,7 +25,7 @@ static TITLE: &str = "Raycasting Showcase";
 static WIDTH: u32 = 800;
 static HEIGHT: u32 = 480;
 
-static MAP: &'static str = "
+static MAP: &str = "
 ###########`&#######
 #           ` / /  #
 #/%#/&`&/&`& % `%`&#
