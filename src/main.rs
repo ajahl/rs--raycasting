@@ -3,20 +3,27 @@ extern crate gl;
 extern crate glfw;
 
 mod camera;
+mod line;
+mod map;
+mod ray;
+mod segment;
+
 use camera::Camera;
-
-use cgmath::Point2;
-
+use cgmath::{MetricSpace, Point2};
 use glfw::fail_on_errors;
-
 use glfw::ffi::glfwGetTime;
 use glfw::{Action, Context, Key};
-
+use line::Line;
+use map::Map;
+use ray::Ray;
+use segment::Segment;
 use std::f32::consts::PI;
+use std::thread::Result;
+
+static TITLE: &str = "Raycasting Showcase";
 
 static WIDTH: u32 = 800;
 static HEIGHT: u32 = 480;
-static TITLE: &str = "Raycasting Showcase";
 
 static MAP: &'static str = "
 ###########`&#######
@@ -33,50 +40,8 @@ static MAP: &'static str = "
 ####################
 ";
 
-fn make_map(map: &str) {
-    let mut result: Vec<Segment> = Vec::new();
-    let lines: Vec<&str> = map.split("\n").collect();
-
-    let mut y = lines.len();
-
-    for line in lines {
-        let mut x = 0;
-        for char in line.chars() {
-            // match char {
-            //     '#' | '*' => result.append(box(Point2(x, y)));
-            //     '/' => result += ul_triangle(Point2(x, y));
-            //     '&' => result += ur_triangle(Point2(x, y));
-            //     '%' => result += lr_triangle(Point2(x, y));
-            //     '`' => result += ll_triangle(Point2(x, y));
-            // }
-            x += 1
-        }
-        y -= 1
-    }
-}
-
-// fn box(point: Point2) {
-//     [
-//         Segment(point + Point2(0, 0), point + Point2(1, 0)),
-//         Segment(point + Point2(1, 0), point + Point2(1, -1)),
-//         Segment(point + Point2(0, 0), point + Point2(0, -1)),
-//         Segment(point + Point2(0, -1), point + Point2(1, -1)),
-//     ]
-// }
-
-struct Segment {
-    start: Point2<f32>,
-    end: Point2<f32>,
-}
-
-impl Segment {
-    fn new(start: Point2<f32>, end: Point2<f32>) -> Segment {
-        Segment { start, end }
-    }
-}
-
 fn main() {
-    let map_wall_segments = make_map(MAP);
+    let map_wall_segments = Map::make_map(MAP);
 
     let mut glfw = glfw::init(glfw::fail_on_errors!()).unwrap();
 
@@ -89,7 +54,7 @@ fn main() {
 
     gl::load_with(|symbol| window.get_proc_address(symbol) as *const _);
 
-    let fov = calculate_fov(WIDTH);
+    let fov = Camera::calculate_fov(WIDTH);
 
     let camera = Camera::new(Point2::new(-0.5, -0.5), PI / 2.0, fov);
 
@@ -109,8 +74,8 @@ fn main() {
             }
         }
 
-        for ray in camera.rays(WIDTH) {
-            let matches = intersect_ray(ray, map_wall_segments);
+        for (ray, segment_point) in camera.rays(WIDTH) {
+            let matches = Ray::intersect(ray, &map_wall_segments);
         }
 
         unsafe {
@@ -127,14 +92,4 @@ fn main() {
 
         window.swap_buffers();
     }
-}
-
-fn intersect_ray(ray: (camera::Ray, Point2<f32>), map_wall_segments: ()) -> () {
-    todo!()
-}
-
-fn calculate_fov(width: u32) -> f32 {
-    let width = width as f32;
-    let half_fov_rad = (PI / 2.0) / 2.0;
-    2.0 * (width / 800.0 * half_fov_rad.tan()).atan()
 }

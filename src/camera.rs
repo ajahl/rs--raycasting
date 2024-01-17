@@ -1,19 +1,14 @@
 extern crate cgmath;
 
+use crate::ray::Ray;
+use cgmath::{Point2, Rad, Vector2};
 use std::f32::consts::PI;
-
-use cgmath::{perspective, Deg, Matrix4, Point2, Rad, Vector2};
 
 pub struct Camera {
     position: Point2<f32>,
     direction: f32,
     viewing_angle: f32,
     planar_projection: bool,
-}
-
-pub struct Ray {
-    origin: Point2<f32>,
-    direction: Vector2<f32>,
 }
 
 impl Camera {
@@ -54,6 +49,7 @@ impl Camera {
                     Ray {
                         origin: self.position,
                         direction: ray_direction,
+                        angle: Ray::angle(ray_direction),
                     },
                     plane_point,
                 ));
@@ -68,6 +64,7 @@ impl Camera {
                     Ray {
                         origin: self.position,
                         direction,
+                        angle: start_angle + (current as f32) * angle_slice,
                     },
                     self.position,
                 ));
@@ -75,5 +72,11 @@ impl Camera {
         }
 
         rays
+    }
+
+    pub fn calculate_fov(width: u32) -> f32 {
+        let width = width as f32;
+        let half_fov_rad = (PI / 2.0) / 2.0;
+        2.0 * (width / 800.0 * half_fov_rad.tan()).atan()
     }
 }
