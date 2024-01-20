@@ -68,23 +68,24 @@ fn main() {
             match event {
                 glfw::WindowEvent::Key(Key::Escape, _, Action::Press, _) => {
                     window.set_should_close(true)
-                }
-                glfw::WindowEvent::Pos(_, _) => todo!(),
-                glfw::WindowEvent::Size(_, _) => todo!(),
-                glfw::WindowEvent::Close => todo!(),
-                glfw::WindowEvent::Refresh => todo!(),
-                glfw::WindowEvent::Focus(_) => todo!(),
-                glfw::WindowEvent::Iconify(_) => todo!(),
-                glfw::WindowEvent::FramebufferSize(_, _) => todo!(),
-                glfw::WindowEvent::MouseButton(_, _, _) => todo!(),
-                glfw::WindowEvent::CursorPos(_, _) => todo!(),
-                glfw::WindowEvent::CursorEnter(_) => todo!(),
-                glfw::WindowEvent::Scroll(_, _) => todo!(),
-                glfw::WindowEvent::Char(_) => todo!(),
-                glfw::WindowEvent::CharModifiers(_, _) => todo!(),
-                glfw::WindowEvent::FileDrop(_) => todo!(),
-                glfw::WindowEvent::Maximize(_) => todo!(),
-                glfw::WindowEvent::ContentScale(_, _) => todo!(),
+                },
+                // glfw::WindowEvent::Pos(_, _) => todo!(),
+                // glfw::WindowEvent::Size(_, _) => todo!(),
+                // glfw::WindowEvent::Close => todo!(),
+                // glfw::WindowEvent::Refresh => todo!(),
+                // glfw::WindowEvent::Focus(_) => todo!(),
+                // glfw::WindowEvent::Iconify(_) => todo!(),
+                // glfw::WindowEvent::FramebufferSize(_, _) => todo!(),
+                // glfw::WindowEvent::MouseButton(_, _, _) => todo!(),
+                // glfw::WindowEvent::CursorPos(_, _) => todo!(),
+                // glfw::WindowEvent::CursorEnter(_) => todo!(),
+                // glfw::WindowEvent::Scroll(_, _) => todo!(),
+                // glfw::WindowEvent::Char(_) => todo!(),
+                // glfw::WindowEvent::CharModifiers(_, _) => todo!(),
+                // glfw::WindowEvent::FileDrop(_) => todo!(),
+                // glfw::WindowEvent::Maximize(_) => todo!(),
+                // glfw::WindowEvent::ContentScale(_, _) => todo!(),
+                _ => {}
             }
         }
 
