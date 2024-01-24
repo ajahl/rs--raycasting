@@ -3,6 +3,7 @@ extern crate cgmath;
 use crate::{line::Line, segment::Segment};
 use cgmath::{MetricSpace, Point2, Vector2};
 
+#[derive(Clone)] 
 pub struct Ray {
     pub origin: Point2<f32>,
     pub direction: Vector2<f32>,
@@ -31,10 +32,10 @@ impl Ray {
         Point2::new(x, y)
     }
 
-    pub fn intersect(
+    pub fn intersect<'a>(
         ray: Ray,
-        map_wall_segments: &Vec<Segment>,
-    ) -> Result<Vec<(f32, Point2<f32>, &Segment)>, &'static str> {
+        map_wall_segments: &'a Vec<&'a Segment>,
+    ) -> Result<Vec<(f32, Point2<f32>, &'a Segment)>, &'static str> {
         let ray_segment = ray.to_segment();
         let start_line = ray_segment.line()?;
 

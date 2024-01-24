@@ -3,9 +3,29 @@ extern crate cgmath;
 use crate::line::Line;
 use cgmath::Point2;
 
+use std::hash::{Hash, Hasher};
+
+#[derive(PartialEq, Clone, Debug)]
 pub struct Segment {
     pub start: Point2<f32>,
     pub end: Point2<f32>,
+}
+
+// impl PartialEq for Segment {
+//     fn eq(&self, other: &Self) -> bool {
+//         self == other
+//     }
+// }
+
+impl Eq for Segment {}
+
+impl Hash for Segment{
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.start.x.to_bits().hash(state);
+        self.start.y.to_bits().hash(state);
+        self.end.x.to_bits().hash(state);
+        self.end.y.to_bits().hash(state);
+    }
 }
 
 impl Segment {

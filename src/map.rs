@@ -1,3 +1,5 @@
+use std::{collections::HashSet, rc::Rc};
+
 use cgmath::{Point2, Vector2};
 
 use crate::segment::Segment;
@@ -5,7 +7,7 @@ use crate::segment::Segment;
 pub struct Map {}
 
 impl Map {
-    pub fn make_map(map: &str) -> Vec<Segment> {
+    pub fn make_map(map: &str) -> Vec<&Segment> {
         let mut result: Vec<Segment> = Vec::new();
         let lines: Vec<&str> = map.split('\n').collect();
 
@@ -35,64 +37,95 @@ impl Map {
             y -= 1
         }
 
-        /*
-                print(f"Segments: {len(result)}")
+        println!("Segments: {}", result.len());
 
-        # if any segment exists twice, then it was between two map items
-        # and both can be removed!
-        result = [item for item in result if result.count(item) == 1]
+        let mut element_seen = HashSet::new();
 
-        print(f"Filtered duplicated wall segments: {len(result)}")
+        let mut result_with_singles: Vec<&Segment> = result
+            .into_iter()
+            .filter_map(|item| {
+                if element_seen.insert(item.clone()) {
+                    Some(item)
+                } else {
+                    None
+                }
+            })
+            .collect();
 
-        cont = True
-        while cont:
-            remove_list = []
-            for s in result:
-                for n in result:
-                    if s.end.x == n.start.x and s.end.y == n.start.y and n.slope == s.slope:
-                        remove_list += [n, s]
-                        result.append(
-                            Segment(Point(s.start.x, s.start.y), Point(n.end.x, n.end.y))
-                        )
-                        break
-                    elif (
-                        s is not n
-                        and s.end.x == n.end.x
-                        and s.end.y == n.end.y
-                        and n.slope == s.slope
-                    ):
-                        remove_list += [n, s]
-                        result.append(
-                            Segment(
-                                Point(s.start.x, s.start.y), Point(n.start.x, n.start.y)
-                            )
-                        )
-                        break
-                    elif (
-                        s is not n
-                        and s.start.x == n.start.x
-                        and s.start.y == n.start.y
-                        and n.slope == s.slope
-                    ):
-                        remove_list += [n, s]
-                        result.append(
-                            Segment(Point(s.end.x, s.end.y), Point(n.end.x, n.end.y))
-                        )
-                        break
+        println!(
+            "Filtered duplicated wall segments: {}",
+            result_with_singles.len()
+        );
 
-                if len(remove_list) > 0:
-                    break
+        let mut result_with_singles_copy: Vec<&Segment> = result_with_singles.clone();//.iter().collect();
+        let mut again = true;
 
-            if len(remove_list) == 0:
-                cont = False
+        while again {
+            let mut result_combined_singles = Vec::new();
+            let mut remove_list: Vec<&Segment> = Vec::new();
 
-            for i in remove_list:
-                result.remove(i)
+            for s in &result_with_singles {
+        
+                for n in &result_with_singles_copy {
+                    // println!("segments: {}  {}", result_with_singles_copy.len(), remove_list.len());
+        
+                    if s.end.x == n.start.x && s.end.y == n.start.y && n.slope() == s.slope() {
+                        remove_list.push(n);
+                        remove_list.push(s);
+                        let combined_segment = Rc::new(Segment::new(
+                            Point2::new(s.start.x, s.start.y),
+                            Point2::new(n.end.x, n.end.y),
+                        ));
+                        result_combined_singles.push(combined_segment);
+                        break;
+                    } else if !std::ptr::eq(s, *n)
+                        && s.end.x == n.end.x
+                        && s.end.y == n.end.y
+                        && n.slope() == s.slope()
+                    {
+                        remove_list.push(n);
+                        remove_list.push(s);
+                        let combined_segment = Rc::new(Segment::new(
+                            Point2::new(s.start.x, s.start.y),
+                            Point2::new(n.end.x, n.end.y),
+                        ));
+                        result_combined_singles.push(combined_segment);
+                        break;
+                    } else if !std::ptr::eq(s, *n)
+                        && s.start.x == n.start.x
+                        && s.start.y == n.start.y
+                        && n.slope() == s.slope()
+                    {
+                        remove_list.push(n);
+                        remove_list.push(s);
+                        let combined_segment = Rc::new(Segment::new(
+                            Point2::new(s.start.x, s.start.y),
+                            Point2::new(n.end.x, n.end.y),
+                        ));
+                        result_combined_singles.push(combined_segment);
+                    }
+                }
+                // println!("Remaining segments: {}  {}", result_with_singles_copy.len(), remove_list.len());
+                if remove_list.len() > 0 {
+                    break;
+                }
+            }
+            if remove_list.len() == 0 {
+                again = false;
+            }
+            for e in &remove_list {
+                let position = &result_with_singles_copy.iter().position(|&i| &i == e);
+                if position.is_some() {
+                    result_with_singles_copy.remove(position.unwrap());
+                }
+            }
+            // result_with_singles_copy.retain(|e| remove_list.contains(&e));
+            // println!("Remaining segments after removing: {}  {}", result_with_singles_copy.len(), remove_list.len());
+        }
 
-        print(f"Merged segments: {len(result)}")
-             */
+        // println!("Merged segments: {}", result_with_singles_copy.len());
 
-        result
+        result_with_singles_copy
     }
 
     pub fn box_shape(point: Point2<i32>) -> Vec<Segment> {
